@@ -92,6 +92,7 @@ namespace GotaSoundIO.Sound {
                         rr.ReadUInt32s(3);
                         LoopStart = r.ReadUInt32(); //(uint)(r.ReadUInt32() / (bitsPerSample / 8));
                         LoopEnd = r.ReadUInt32(); //(uint)(r.ReadUInt32() / (bitsPerSample / 8));
+                        LoopLength = LoopEnd - LoopStart;
                     }
                 }
 
@@ -133,9 +134,11 @@ namespace GotaSoundIO.Sound {
                 //Sample block.
                 if (Loops) {
                     rw.StartChunk("smpl");
-                    rw.Write(new uint[2]);
+                    rw.Write(0); //size will be written by EndChunk()
+                    rw.Write(0); //Unspecified manufacturer
+
                     rw.Write((uint)(1d / SampleRate * 1000000000));
-                    rw.Write((uint)60);
+                    rw.Write((uint)60); //Note = 60
                     rw.Write(new uint[3]);
                     rw.Write((uint)1);
                     rw.Write(new uint[3]);

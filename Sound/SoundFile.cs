@@ -79,6 +79,17 @@ namespace GotaSoundIO.Sound {
         /// </summary>
         public uint OriginalLoopStart { get; set; }
 
+
+        /// <summary>
+        /// Start loop.
+        /// </summary>
+        public uint LoopLength { get; set; }
+
+        /// <summary>
+        /// Original loop start.
+        /// </summary>
+        public uint OriginalLoopLength { get; set; }
+
         /// <summary>
         /// Ending loop.
         /// </summary>
@@ -195,6 +206,7 @@ namespace GotaSoundIO.Sound {
             //Set data.
             Loops = other.Loops;
             LoopStart = other.LoopStart;
+            LoopLength = other.LoopLength;
             LoopEnd = other.LoopEnd;
             OriginalLoopStart = other.OriginalLoopStart;
             OriginalLoopEnd = other.OriginalLoopEnd;
@@ -315,7 +327,9 @@ namespace GotaSoundIO.Sound {
                 else {
                     LoopEnd += dist2 - LoopStart;
                     LoopStart = dist2;
-                    if (LoopEnd > Audio.NumSamples) { LoopEnd = (uint)Audio.NumSamples - 1; }
+                    if (LoopEnd > Audio.NumSamples) { 
+                        LoopEnd = (uint)Audio.NumSamples - 1; 
+                    }
                 }
 
             }

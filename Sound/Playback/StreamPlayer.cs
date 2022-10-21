@@ -56,17 +56,25 @@ namespace GotaSoundIO.Sound.Playback {
         /// Load a stream.
         /// </summary>
         /// <param name="s">The sound file.</param>
-        public void LoadStream(SoundFile s) {
+        public void LoadStream(SoundFile s, bool forceLoop = false) {
             Riff = new RiffWave();
             Riff.FromOtherStreamFile(s);
+
+            if (forceLoop) {
+                Riff.Loops = true;
+            }
+
             MemoryStream = new MemoryStream(Riff.Write());
             WaveFileReader = new WaveFileReader(MemoryStream);
             SoundOut.Dispose();
             SoundOut = new WaveOut();
             LoopStream = new LoopStream(this, WaveFileReader, Riff.Loops && Loop, s.LoopStart, (Riff.Loops && Loop) ? s.LoopEnd : (uint)s.Audio.NumSamples);
+
             try {
                 SoundOut.Init(LoopStream);
-            } catch (NAudio.MmException e) { SoundOut = new NullWavePlayer(); }
+            } catch (NAudio.MmException) { 
+                SoundOut = new NullWavePlayer(); 
+            }
         }
 
         /// <summary>
