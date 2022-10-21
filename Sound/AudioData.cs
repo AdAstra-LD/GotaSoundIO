@@ -88,12 +88,14 @@ namespace GotaSoundIO.Sound {
         /// </summary>
         /// <returns>Duplicate audio data.</returns>
         public AudioData Duplicate() {
-            AudioData a = new AudioData();
-            a.EncodingType = EncodingType;
-            a.BlockSize = BlockSize;
-            a.BlockSamples = BlockSamples;
-            a.LastBlockPaddingSize = LastBlockPaddingSize;
-            a.Channels = new List<List<IAudioEncoding>>();
+            AudioData a = new AudioData {
+                EncodingType = EncodingType,
+                BlockSize = BlockSize,
+                BlockSamples = BlockSamples,
+                LastBlockPaddingSize = LastBlockPaddingSize,
+                Channels = new List<List<IAudioEncoding>>()
+            };
+
             for (int i = 0; i < Channels.Count; i++) {
                 List<IAudioEncoding> chan = new List<IAudioEncoding>();
                 for (int j = 0; j < Channels[i].Count; j++) {
@@ -180,13 +182,27 @@ namespace GotaSoundIO.Sound {
         /// </summary>
         /// <param name="targetBlockSize">New block size to change to.</param>
         public void ChangeBlockSize(int targetBlockSize) {
-            if (BlockSize == targetBlockSize) { return; }
+            if (BlockSize == targetBlockSize) { 
+                return; 
+            }
+
             var tmp = (IAudioEncoding)Activator.CreateInstance(EncodingType);
             BlockSize = targetBlockSize;
             for (int i = 0; i < Channels.Count; i++) {
                 Channels[i] = tmp.ChangeBlockSize(Channels[i], targetBlockSize);
             }
-            if (targetBlockSize == -1) { BlockSamples = -1; } else { BlockSamples = Channels.Count == 0 ? 0 : Channels[0][0].SampleCount(); }
+
+            if (targetBlockSize == -1) { 
+                BlockSamples = -1; 
+            } else { 
+                if (Channels.Count == 0) {
+                    BlockSamples = 0;
+                } else if (Channels[0].Count == 0 ) {
+                    BlockSamples = 0;
+                } else {
+                    BlockSamples = Channels[0][0].SampleCount();
+                }
+            }
         }
 
         /// <summary>
