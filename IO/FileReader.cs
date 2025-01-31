@@ -463,17 +463,17 @@ namespace GotaSoundIO.IO {
         }
 
         /// <summary>
-        /// Read a null terminated string.
+        /// Reads a null-terminated string.
         /// </summary>
-        /// <returns>The string.</returns>
+        /// <returns>The string read from the stream.</returns>
+        /// <exception cref="IOException">Thrown when an I/O error occurs.</exception>
         public string ReadNullTerminated() {
-            string s = "";
-            char c = ReadChar();
-            while (c != 0) {
-                s += c;
-                c = ReadChar();
+            MemoryStream ms = new MemoryStream();
+            int b;
+            while ((b = ReadByte()) != 0 && b != -1) {
+                ms.WriteByte((byte)b);
             }
-            return s;
+            return Encoding.UTF8.GetString(ms.ToArray());
         }
 
         /// <summary>

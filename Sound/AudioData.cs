@@ -344,15 +344,16 @@ namespace GotaSoundIO.Sound {
         public void Trim(int totalSamples) {
 
             //Trim samples.
-            int samplesToTrim = NumSamples - totalSamples;
+            int toTrim = NumSamples - totalSamples;
             for (int i = 0; i < Channels.Count; i++) {
-                int toTrim = samplesToTrim;
+                IAudioEncoding last = Channels[i].Last();
+
                 while (toTrim > 0) {
-                    int cutSamples = Math.Min(Channels[i].Last().SampleCount(), toTrim);
-                    Channels[i].Last().Trim(totalSamples);
+                    int cutSamples = Math.Min(last.SampleCount(), toTrim);
+                    last.Trim(totalSamples);
                     toTrim -= cutSamples;
-                    if (Channels[i].Last().SampleCount() == 0) {
-                        Channels[i].Remove(Channels[i].Last());
+                    if (last.SampleCount() == 0) {
+                        Channels[i].Remove(last);
                     }
                 }
             }
