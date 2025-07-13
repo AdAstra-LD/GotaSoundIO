@@ -3,8 +3,6 @@ using GotaSoundIO.Sound.Encoding;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using VGAudio.Codecs.GcAdpcm;
 using VGAudio.Utilities;
 
