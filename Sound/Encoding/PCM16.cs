@@ -70,7 +70,7 @@ namespace GotaSoundIO.Sound {
         /// <param name="loopStart">Loop start.</param>
         /// <param name="loopEnd">Loop end.</param>
         public void FromFloatPCM(float[] pcm, object encodingData = null, int loopStart = -1, int loopEnd = -1) {
-            Data = pcm.Select(x => (short)(x * short.MaxValue)).ToArray();
+            Data = pcm.Select(x => (short)Math.Max(short.MinValue, Math.Min(short.MaxValue, Math.Round(x * (double)short.MaxValue)))).ToArray();
         }
 
         /// <summary>
