@@ -30,10 +30,15 @@ namespace GotaSoundIO.Sound {
         private int Index;
 
         /// <summary>
+        /// Number of samples, one less than twice the data length when the last byte holds a single nibble.
+        /// </summary>
+        private int Samples;
+
+        /// <summary>
         /// Number of samples contained.
         /// </summary>
         /// <returns>Number of samples.</returns>
-        public int SampleCount() => Data.Length * 2;
+        public int SampleCount() => Samples;
 
         /// <summary>
         /// Data size contained.
@@ -64,6 +69,7 @@ namespace GotaSoundIO.Sound {
             Sample = r.ReadInt16();
             Index = r.ReadInt16();
             Data = r.ReadBytes((int)(dataSize - 4));
+            Samples = numSamples > 0 && numSamples < Data.Length * 2 ? (int)numSamples : Data.Length * 2;
         }
 
         /// <summary>
@@ -86,6 +92,7 @@ namespace GotaSoundIO.Sound {
         public void FromFloatPCM(float[] pcm, object encodingData = null, int loopStart = -1, int loopEnd = -1) {
             ImaAdpcmEncoder e = new ImaAdpcmEncoder(pcm, out Sample, out Index);
             Data = e.Encode();
+            Samples = pcm.Length;
         }
 
         /// <summary>
@@ -95,7 +102,8 @@ namespace GotaSoundIO.Sound {
         /// <returns>Floating point PCM data.</returns>
         public float[] ToFloatPCM(object decodingData = null) {
             ImaAdpcmDecoder d = new ImaAdpcmDecoder(Sample, Index, Data, 0);
-            return d.Decode();
+            float[] pcm = d.Decode();
+            return pcm.Length > Samples ? pcm.SubArray(0, Samples) : pcm;
         }
 
         /// <summary>
@@ -104,6 +112,7 @@ namespace GotaSoundIO.Sound {
         /// <param name="totalSamples">Total number of samples to have in the end.</param>
         public void Trim(int totalSamples) {
             Data = Data.SubArray(0, totalSamples / 2 + (totalSamples % 2 == 1 ? 1 : 0));
+            Samples = Math.Min(totalSamples, Data.Length * 2);
         }
 
         /// <summary>
@@ -159,6 +168,7 @@ namespace GotaSoundIO.Sound {
             Array.Copy(Data, ret.Data, Data.Length);
             ret.Sample = Sample;
             ret.Index = Index;
+            ret.Samples = Samples;
             return ret;
         }
 
